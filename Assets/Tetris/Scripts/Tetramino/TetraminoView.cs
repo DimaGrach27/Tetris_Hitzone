@@ -11,6 +11,7 @@ namespace Tetris.Tetramino
     [SerializeField] private bool _isOnlyTwoSideRotation;
     [SerializeField] private Vector2 _spawnOffset;
     [SerializeField] private Color _color;
+    [SerializeField] private Transform[] _blocksPoint;
 
     private Block[] _blocks;
     public Block[] BLocks => _blocks;
@@ -21,15 +22,6 @@ namespace Tetris.Tetramino
     public Vector2 SpawnOffset => _spawnOffset;
     public Color Color => _color;
     public bool IsOnlyTwoSideRotation => _isOnlyTwoSideRotation;
-
-    private void Awake()
-    {
-      _blocks = GetComponentsInChildren<Block>();
-      foreach (var block in _blocks)
-      {
-        block.Init(this);
-      }
-    }
 
     public void Rotation(int angle)
     {
@@ -55,9 +47,24 @@ namespace Tetris.Tetramino
       }
     }
 
+    public void CreateBlocks(BlockPool blockPool)
+    {
+      _blocks = new Block[_blocksPoint.Length];
+      
+      for (int i = 0; i < _blocksPoint.Length; i++)
+      {
+        Block block = blockPool.Pool.Get();
+        block.SetPosition(_blocksPoint[i].position);
+        block.transform.SetParent(transform);
+        block.Init(this);
+
+        _blocks[i] = block;
+      }
+    }
+
     public Bound GetBound()
     {
-      Transform trans = GetComponent<Transform>();
+      Transform trans = transform;
       Vector3 pos = trans.position;
       Vector3 offset = trans.right * _offset.x;
       int multiply = Math.Abs(trans.eulerAngles.z - 90) < 0.01f ? -1 : 1;
@@ -79,15 +86,9 @@ namespace Tetris.Tetramino
     {
       Transform trans = GetComponent<Transform>();
       Vector3 pos = trans.position;
-      // Vector3 offset = trans.right * _offset.x;
-      // int multiply = Math.Abs(trans.eulerAngles.z - 90) < 0.01f ? -1 : 1;
-      // offset += trans.up * _offset.y * multiply;
-      // pos += offset;
+
       Gizmos.color = Color.green;
-      // Gizmos.DrawLine(pos + _offset, pos + trans.up * _size.y);
-      // Gizmos.DrawLine(pos + _offset, pos + trans.right * _size.x);
-      
-      // Gizmos.DrawWireCube(pos, _size);
+
       Gizmos.DrawLine(pos, new Vector3(GetBound().xMin, pos.y));
       Gizmos.DrawLine(pos, new Vector3(GetBound().xMax, pos.y));
       Gizmos.DrawLine(pos, new Vector3(pos.x, GetBound().yMin));

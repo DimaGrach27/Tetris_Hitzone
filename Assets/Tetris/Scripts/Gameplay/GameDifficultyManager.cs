@@ -1,9 +1,10 @@
 using Tetris.Global;
+using Tetris.Interfaces;
 using UnityEngine;
 
 namespace Tetris.Gameplay
 {
-  public class GameDifficultyManager
+  public class GameDifficultyManager : IRestart
   {
     private readonly GameplayUiView _gameplayUiView;
     private readonly GameplayModel _gameplayModel;
@@ -44,6 +45,13 @@ namespace Tetris.Gameplay
     private void CalculateSpeed()
     {
       _gameplayModel.MoveTick *= 0.7f;
+    }
+
+    public void Restart()
+    {
+      _gameplayModel.MoveTick = Constants.DEFAULT_TICK;
+      _gameplayModel.Level = 0;
+      _gameplayUiView.Level = _gameplayModel.Level;
     }
   }
 }

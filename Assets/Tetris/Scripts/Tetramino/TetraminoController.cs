@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Tetris.Tetramino
 {
-  public class TetraminoController : IInit, IDestroy
+  public class TetraminoController : IInit, IDestroy, IRestart
   {
     private readonly BlockSpawnerService _blockSpawnerService;
     
@@ -14,6 +14,7 @@ namespace Tetris.Tetramino
     private readonly GameLoseHandler _gameLoseHandler;
     private readonly BlockManager _blockManager;
     private readonly LineController _lineController;
+    private readonly BlockPool _blockPool;
 
     private TetraminoView _nextTetramino;
     
@@ -24,7 +25,8 @@ namespace Tetris.Tetramino
       Transform tetraminoContainer,
       GameLoseHandler gameLoseHandler,
       BlockManager blockManager,
-      LineController lineController
+      LineController lineController,
+      BlockPool blockPool
     )
     {
       _blockSpawnerService = blockSpawnerService;
@@ -34,6 +36,7 @@ namespace Tetris.Tetramino
       _gameLoseHandler = gameLoseHandler;
       _blockManager = blockManager;
       _lineController = lineController;
+      _blockPool = blockPool;
     }
     
     public void Init()
@@ -102,6 +105,17 @@ namespace Tetris.Tetramino
       Vector2 pos = _tetraminoContainer.position;
       pos += _nextTetramino.SpawnOffset;
       _nextTetramino.SetPosition(pos);
+    }
+
+    public void Restart()
+    {
+      if (_nextTetramino != null)
+      {
+        Object.Destroy(_nextTetramino.gameObject);
+        _nextTetramino = null;
+      }
+      
+      SetNewTetramino();
     }
   }
 }

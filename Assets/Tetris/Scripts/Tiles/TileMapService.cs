@@ -6,21 +6,22 @@ using Tetris.Tetramino;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using Object = UnityEngine.Object;
 
 namespace Tetris.Tiles
 {
-  public class TileMapService : IService, IInit
+  public class TileMapService : IService, IInit, IRestart
   {
     private readonly Tilemap _tilemap;
+    private readonly BlockPool _blockPool;
 
     private Transform _debugCoordContainer;
 
     private readonly Dictionary<Vector3Int, Tile> _tilesMap = new();
 
-    public TileMapService(Tilemap tilemap)
+    public TileMapService(Tilemap tilemap, BlockPool blockPool)
     {
       _tilemap = tilemap;
+      _blockPool = blockPool;
     }
     
     public void Init()
@@ -86,7 +87,7 @@ namespace Tetris.Tiles
       {
         if (keyValue.Key.y == y)
         {
-          Object.Destroy(keyValue.Value.Block.gameObject);
+          _blockPool.Pool.Release(keyValue.Value.Block);
           keyValue.Value.Block = null;
         }
       }
@@ -173,6 +174,18 @@ namespace Tetris.Tiles
     public Vector3 CellToWorld(Vector3Int cellPos)
     {
       return _tilemap.CellToWorld(cellPos);
+    }
+
+    public void Restart()
+    {
+      foreach (var tile in _tilesMap.Values)
+      {
+        if (tile.Block != null)
+        {
+          _blockPool.Pool.Release(tile.Block);
+          tile.Block = null;
+        }
+      }
     }
   }
 }

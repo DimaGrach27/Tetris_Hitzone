@@ -4,7 +4,7 @@ using Tetris.Tiles;
 
 namespace Tetris.Gameplay
 {
-  public class LineController
+  public class LineController : IRestart
   {
     private readonly CheckTilesLine _checkTilesLine;
     private readonly GameplayUiView _gameplayUiView;
@@ -34,6 +34,12 @@ namespace Tetris.Gameplay
       _gameplayUiView.Lines = _lines;
       _scoreManager.CalculateLinesScore(lineCount);
       _gameDifficultyManager.SetLines(lineCount);
+    }
+
+    public void Restart()
+    {
+      _lines = 0;
+      _gameplayUiView.Lines = _lines;
     }
   }
 }

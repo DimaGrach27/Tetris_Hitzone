@@ -12,6 +12,7 @@ namespace Tetris.Gameplay
     [SerializeField] private Tilemap _gameplayTilemap;
     [SerializeField] private Transform _tetraminoContainer;
     [SerializeField] private GameplayUiView _gameplayUiView;
+    [SerializeField] private LoseScreen _loseScreen;
 
     private TileMapService _tileMapService;
     private ControlComponent _controlComponent;
@@ -25,26 +26,31 @@ namespace Tetris.Gameplay
     private BlockManager _blockManager;
     private ScoreManager _scoreManager;
     private GameDifficultyManager _gameDifficultyManager;
+    private RestartHandler _restartHandler;
+    private ExitHandler _exitHandler;
     
     private IInit[] _inits;
     private IDestroy[] _destroys;
     private IComponent[] _components;
     private ICondition[] _conditions;
     private ITickable[] _tickables;
+    private IRestart[] _restarts;
     
     private void Awake()
     {
       BlockSpawnerService spawnerService = ServiceLocator.Instance.GetService<BlockSpawnerService>();
+      SceneService sceneService = ServiceLocator.Instance.GetService<SceneService>();
+      BlockPool blockPool = ServiceLocator.Instance.GetService<BlockPool>();
       
       _gameplayModel = new GameplayModel();
-      _tileMapService = new TileMapService(_gameplayTilemap);
+      _tileMapService = new TileMapService(_gameplayTilemap, blockPool);
       _moveComponent = new MoveComponent(_tileMapService, _gameplayModel);
       _controlComponent = new ControlComponent(_tileMapService, _moveComponent);
       _rotationComponent = new RotationComponent(_tileMapService);
       _checkTilesLine = new CheckTilesLine(_tileMapService);
       _blockManager = new BlockManager(_tileMapService);
       _gameDifficultyManager = new GameDifficultyManager(_gameplayUiView, _gameplayModel);
-      _gameLoseHandler = new GameLoseHandler(_tileMapService);
+      _gameLoseHandler = new GameLoseHandler(_tileMapService, _loseScreen);
       
       _components = new IComponent[]
       {
@@ -77,8 +83,23 @@ namespace Tetris.Gameplay
         _tetraminoContainer,
         _gameLoseHandler,
         _blockManager,
-        _lineController
+        _lineController,
+        blockPool
         );
+      
+      _restarts = new IRestart[]
+      {
+        _tileMapService,
+        _gameDifficultyManager,
+        _lineController,
+        _scoreManager,
+        _tetraminoController,
+      };
+
+      _restartHandler = new RestartHandler(_restarts);
+      _exitHandler = new ExitHandler(sceneService);
+      
+      _loseScreen.SetDependencies(_restartHandler, _exitHandler);
     }
 
     private void Start()
@@ -105,7 +126,7 @@ namespace Tetris.Gameplay
         _tetraminoController,
         _scoreManager,
       };
-      
+
       foreach (var init in _inits)
       {
         init.Init();

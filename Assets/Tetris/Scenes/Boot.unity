@@ -169,6 +169,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _tetraminosHolderConfig: {fileID: 11400000, guid: 95a2505d91ab0ee4eb4dd0e4afc6fc23, type: 2}
   _coroutineHelper: {fileID: 1317846952}
+  _blockPrefab: {fileID: 3092205732428184499, guid: 06097c6b8596ce346a777048eb8af9f8, type: 3}
 --- !u!1001 &1317846951
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -268,8 +269,8 @@ Camera:
   m_GameObject: {fileID: 1961092905}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0

@@ -3,7 +3,7 @@ using Tetris.Tetramino;
 
 namespace Tetris.Gameplay
 {
-  public class ScoreManager : IInit, IDestroy
+  public class ScoreManager : IInit, IDestroy, IRestart
   {
     private readonly GameplayUiView _gameplayUiView;
     private readonly ICondition[] _conditions;
@@ -49,6 +49,12 @@ namespace Tetris.Gameplay
       {
         condition.OnBLockPLaced -= OnPlacedHandler;
       }
+    }
+
+    public void Restart()
+    {
+      _gameplayModel.Score = 0;
+      _gameplayUiView.Score = _gameplayModel.Score;
     }
   }
 }

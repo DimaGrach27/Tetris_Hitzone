@@ -9,15 +9,18 @@ namespace Tetris.Tetramino
 {
   public class ControlComponent : IComponent, IInit, IDestroy, ICondition, ITickable
   {
+    private const float BOOST_MOVE_TICK = 0.025f;
     public event Action<TetraminoView> OnBLockPLaced;
 
     private readonly TileMapService _tileMapService;
     private readonly MoveComponent _moveComponent;
+    
     private TetraminoView _tetraminoView;
     private InputKeys _inputKeys;
+    
     private bool _isBoostActive = false;
+    
     private float _deltaTimeDur;
-    private const float BOOST_MOVE_TICK = 0.05f;
 
     public ControlComponent(TileMapService tileMapService, MoveComponent moveComponent)
     {

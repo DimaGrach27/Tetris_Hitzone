@@ -11,6 +11,7 @@ namespace Tetris
   {
     [SerializeField] private TetraminosHolderConfig _tetraminosHolderConfig;
     [SerializeField] private CoroutineHelper _coroutineHelper;
+    [SerializeField] private Block _blockPrefab;
     
     private SceneService _sceneService;
 
@@ -23,12 +24,14 @@ namespace Tetris
     private void CreateServices()
     {
       _sceneService = new SceneService();
+      BlockPool blockPool = new BlockPool(_blockPrefab);
       
       List<IService> services = new List<IService>
       {
-        new BlockSpawnerService(_tetraminosHolderConfig),
+        new BlockSpawnerService(_tetraminosHolderConfig, blockPool),
         _sceneService,
         _coroutineHelper,
+        blockPool,
       };
 
       foreach (var service in services)

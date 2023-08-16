@@ -8,6 +8,7 @@ namespace Tetris.Gameplay
   {
     private readonly TileMapService _tileMapService;
 
+    private Transform BlockContainer => _blockContainer ??= new GameObject("BlockContainer").transform;
     private Transform _blockContainer;
 
     public BlockManager(TileMapService tileMapService)
@@ -21,7 +22,7 @@ namespace Tetris.Gameplay
         _tileMapService.AddBlock(block.Position, block);
       }
       
-      tetraminoView.DeattachBlocks(_blockContainer);
+      tetraminoView.DeattachBlocks(BlockContainer);
     }
   }
 }

@@ -12,14 +12,16 @@ namespace Tetris.Gameplay
   public class BlockSpawnerService : IService
   {
     private readonly TetraminosHolderConfig _holderConfig;
+    private readonly BlockPool _blockPool;
     private readonly int _spawnHeight;
 
     private readonly Dictionary<TetraminoType, TetraminoView> _tetraminoMap = new();
 
-    public BlockSpawnerService(TetraminosHolderConfig holderConfig)
+    public BlockSpawnerService(TetraminosHolderConfig holderConfig, BlockPool blockPool)
     {
       _holderConfig = holderConfig;
-      
+      _blockPool = blockPool;
+
       foreach (var tetramino in _holderConfig.TetraminoPrefabs)
       {
         _tetraminoMap.Add(tetramino.TetraminoType, tetramino);
@@ -35,6 +37,7 @@ namespace Tetris.Gameplay
       TetraminoView prefab = _tetraminoMap[type];
       Vector2 spawnPoint = Vector2.up * _spawnHeight + prefab.SpawnOffset;
       TetraminoView tetraminoView = Object.Instantiate(prefab, spawnPoint, Quaternion.identity);
+      tetraminoView.CreateBlocks(_blockPool);
 
       return tetraminoView;
     }
