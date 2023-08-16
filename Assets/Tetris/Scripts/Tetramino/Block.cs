@@ -4,6 +4,8 @@ namespace Tetris.Tetramino
 {
   public class Block : MonoBehaviour
   {
+    [SerializeField] private SpriteRenderer _spriteRenderer;
+    
     private TetraminoView _tetraminoView;
     
     public Vector2 Position => transform.position;
@@ -16,6 +18,12 @@ namespace Tetris.Tetramino
     public void Init(TetraminoView tetraminoView)
     {
       _tetraminoView = tetraminoView;
+      _spriteRenderer.color = tetraminoView.Color;
+    }
+
+    public void SetPosition(Vector2 pos)
+    {
+      transform.position = pos;
     }
 
     private void OnDrawGizmos()

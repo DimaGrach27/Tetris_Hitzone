@@ -1,5 +1,6 @@
+using Tetris.Global;
 using Tetris.Interfaces;
-using Tetris.Tetris.Scripts.Tiles;
+using Tetris.Tiles;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,15 +8,15 @@ namespace Tetris.Tetramino
 {
   public class RotationComponent : IComponent, IInit, IDestroy
   {
-    private readonly TileMapController _tileMapController;
+    private readonly TileMapService _tileMapService;
     private TetraminoView _tetraminoView;
     private InputKeys _inputKeys;
 
     private int _currentRotation;
     
-    public RotationComponent(TileMapController tileMapController)
+    public RotationComponent(TileMapService tileMapService)
     {
-      _tileMapController = tileMapController;
+      _tileMapService = tileMapService;
     }
 
     public void SetTetramino(TetraminoView tetraminoView)
@@ -63,7 +64,7 @@ namespace Tetris.Tetramino
         for (float y = bound.yMin; y < bound.yMax; y++)
         {
           Vector2 pos = new Vector2(x, y);
-          Block block = _tileMapController.GetTileByPos(pos).Block;
+          Block block = _tileMapService.GetTileByPos(pos).Block;
 
           if (block != null && block.Owner != _tetraminoView)
           {
@@ -79,22 +80,22 @@ namespace Tetris.Tetramino
     {
       Bound bound = _tetraminoView.GetBound();
 
-      if (bound.xMax > 5.0f)
+      if (bound.xMax > Constants.WIDTH_FIELD / 2)
       {
         return false;
       }
       
-      if (bound.xMin < -5.0f)
+      if (bound.xMin < -Constants.WIDTH_FIELD / 2)
       {
         return false;
       }
       
-      if (bound.yMax > 5.0f)
+      if (bound.yMax > Constants.HEIGHT_FIELD / 2)
       {
         return false;
       }
       
-      if (bound.yMin < -5.0f)
+      if (bound.yMin < -Constants.HEIGHT_FIELD / 2)
       {
         return false;
       }

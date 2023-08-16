@@ -1,32 +1,37 @@
 using System;
+using Tetris.Gameplay;
+using Tetris.Global;
 using Tetris.Interfaces;
-using Tetris.Tetris.Scripts.Tiles;
+using Tetris.Tiles;
 using UnityEngine;
 
 namespace Tetris.Tetramino
 {
-  public class MoveComponent : IComponent
+  public class MoveComponent : IComponent, ICondition, ITickable
   {
-    public event Action OnPlaced;
-    
-    private readonly TileMapController _tileMapController;
-    
-    private float _speed = 1.0f;
+    public event Action<TetraminoView> OnBLockPLaced;
+
+    private readonly TileMapService _tileMapService;
+    private readonly GameplayModel _gameplayModel;
+
     private float _deltaTimeDur;
     
     private bool _isCanMove = true;
+    private bool _isBlockControl = false;
 
     private TetraminoView _tetraminoView;
     
-    public MoveComponent(TileMapController tileMapController)
+    public MoveComponent(TileMapService tileMapService, GameplayModel gameplayModel)
     {
-      _tileMapController = tileMapController;
+      _tileMapService = tileMapService;
+      _gameplayModel = gameplayModel;
     }
     
     public void SetTetramino(TetraminoView tetraminoView)
     {
       _tetraminoView = tetraminoView;
       _isCanMove = true;
+      _isBlockControl = false;
       _deltaTimeDur = 0.0f;
     }
 
@@ -34,10 +39,20 @@ namespace Tetris.Tetramino
     {
       _tetraminoView = null;
     }
+
+    public void SetIsBlockControl(bool value)
+    {
+      _isBlockControl = value;
+    }
     
-    public void Tick()
+    public void Tick(float deltaTime)
     {
       if (_tetraminoView == null)
+      {
+        return;
+      }
+
+      if (_isBlockControl)
       {
         return;
       }
@@ -49,17 +64,17 @@ namespace Tetris.Tetramino
       
       _deltaTimeDur += Time.deltaTime;
 
-      if (_deltaTimeDur <= _speed)
+      if (_deltaTimeDur <= _gameplayModel.MoveTick)
       {
         return;
       }
 
-      _deltaTimeDur -= _speed;
+      _deltaTimeDur -= _gameplayModel.MoveTick;
       
       if (!CheckDown())
       {
         _isCanMove = false;
-        OnPlaced?.Invoke();
+        OnBLockPLaced?.Invoke(_tetraminoView);
         return;
       }
       
@@ -70,8 +85,8 @@ namespace Tetris.Tetramino
     {
       foreach (var block in _tetraminoView.BLocks)
       {
-        if (block.DownDir.y <= -5.0f || 
-            _tileMapController.GetTileByPos(block.DownDir).Block != null)
+        if (block.DownDir.y <= -Constants.HEIGHT_FIELD / 2 || 
+            _tileMapService.GetTileByPos(block.DownDir).Block != null)
         {
           return false;
         }

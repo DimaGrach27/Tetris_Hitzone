@@ -1,9 +1,9 @@
 using Tetris.Tetramino;
 
-namespace Tetris.Tetris.Scripts.Tiles
+namespace Tetris.Tiles
 {
   public class Tile
   {
-    public Block Block;
+    public Block Block = null;
   }
 }

@@ -10,6 +10,7 @@ namespace Tetris.Tetramino
     [SerializeField] private TetraminoType _type;
     [SerializeField] private bool _isOnlyTwoSideRotation;
     [SerializeField] private Vector2 _spawnOffset;
+    [SerializeField] private Color _color;
 
     private Block[] _blocks;
     public Block[] BLocks => _blocks;
@@ -18,6 +19,7 @@ namespace Tetris.Tetramino
     public Vector2 Size => _size;
     public Vector3 Offset => _offset;
     public Vector2 SpawnOffset => _spawnOffset;
+    public Color Color => _color;
     public bool IsOnlyTwoSideRotation => _isOnlyTwoSideRotation;
 
     private void Awake()
@@ -38,6 +40,19 @@ namespace Tetris.Tetramino
     {
       Vector3 dirMove = new Vector3(direction.x, direction.y);
       transform.position += dirMove;
+    }
+    
+    public void SetPosition(Vector2 pos)
+    {
+      transform.position = pos;
+    }
+
+    public void DeattachBlocks(Transform parent)
+    {
+      foreach (var block in _blocks)
+      {
+        block.transform.SetParent(parent);
+      }
     }
 
     public Bound GetBound()

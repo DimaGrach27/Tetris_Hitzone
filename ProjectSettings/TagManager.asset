@@ -41,3 +41,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Back
+    uniqueID: 3284014271
+    locked: 0
+  - name: GameBoard
+    uniqueID: 2482231141
+    locked: 0
+  - name: Elements
+    uniqueID: 1793100159
+    locked: 0
