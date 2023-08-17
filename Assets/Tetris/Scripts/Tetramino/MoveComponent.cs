@@ -13,6 +13,7 @@ namespace Tetris.Tetramino
 
     private readonly TileMapService _tileMapService;
     private readonly GameplayModel _gameplayModel;
+    private readonly PauseHandler _pauseHandler;
 
     private float _deltaTimeDur;
     
@@ -21,10 +22,11 @@ namespace Tetris.Tetramino
 
     private TetraminoView _tetraminoView;
     
-    public MoveComponent(TileMapService tileMapService, GameplayModel gameplayModel)
+    public MoveComponent(TileMapService tileMapService, GameplayModel gameplayModel, PauseHandler pauseHandler)
     {
       _tileMapService = tileMapService;
       _gameplayModel = gameplayModel;
+      _pauseHandler = pauseHandler;
     }
     
     public void SetTetramino(TetraminoView tetraminoView)
@@ -47,6 +49,11 @@ namespace Tetris.Tetramino
     
     public void Tick(float deltaTime)
     {
+      if (_pauseHandler.IsPause)
+      {
+        return;
+      }
+      
       if (_tetraminoView == null)
       {
         return;

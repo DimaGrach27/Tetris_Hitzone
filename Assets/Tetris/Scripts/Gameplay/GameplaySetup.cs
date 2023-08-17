@@ -13,6 +13,8 @@ namespace Tetris.Gameplay
     [SerializeField] private Transform _tetraminoContainer;
     [SerializeField] private GameplayUiView _gameplayUiView;
     [SerializeField] private LoseScreen _loseScreen;
+    [SerializeField] private ArrowPanel _arrowPanel;
+    [SerializeField] private ButtonPanel _buttonPanel;
 
     private TileMapService _tileMapService;
     private ControlComponent _controlComponent;
@@ -28,6 +30,8 @@ namespace Tetris.Gameplay
     private GameDifficultyManager _gameDifficultyManager;
     private RestartHandler _restartHandler;
     private ExitHandler _exitHandler;
+    private PauseHandler _pauseHandler;
+    private GamePlayMenuController _gamePlayMenuController;
     
     private IInit[] _inits;
     private IDestroy[] _destroys;
@@ -41,16 +45,18 @@ namespace Tetris.Gameplay
       BlockSpawnerService spawnerService = ServiceLocator.Instance.GetService<BlockSpawnerService>();
       SceneService sceneService = ServiceLocator.Instance.GetService<SceneService>();
       BlockPool blockPool = ServiceLocator.Instance.GetService<BlockPool>();
-      
+
+      _pauseHandler = new PauseHandler(_buttonPanel);
       _gameplayModel = new GameplayModel();
       _tileMapService = new TileMapService(_gameplayTilemap, blockPool);
-      _moveComponent = new MoveComponent(_tileMapService, _gameplayModel);
-      _controlComponent = new ControlComponent(_tileMapService, _moveComponent);
-      _rotationComponent = new RotationComponent(_tileMapService);
+      _moveComponent = new MoveComponent(_tileMapService, _gameplayModel, _pauseHandler);
+      _controlComponent = new ControlComponent(_tileMapService, _moveComponent, _arrowPanel, _pauseHandler);
+      _rotationComponent = new RotationComponent(_tileMapService, _arrowPanel, _pauseHandler);
       _checkTilesLine = new CheckTilesLine(_tileMapService);
       _blockManager = new BlockManager(_tileMapService);
       _gameDifficultyManager = new GameDifficultyManager(_gameplayUiView, _gameplayModel);
       _gameLoseHandler = new GameLoseHandler(_tileMapService, _loseScreen);
+      _gamePlayMenuController = new GamePlayMenuController(_buttonPanel, _exitHandler, _pauseHandler);
       
       _components = new IComponent[]
       {
@@ -111,6 +117,7 @@ namespace Tetris.Gameplay
         _tileMapService,
         _tetraminoController,
         _scoreManager,
+        _gamePlayMenuController,
       };
       
       _tickables = new ITickable[]
@@ -125,6 +132,7 @@ namespace Tetris.Gameplay
         _rotationComponent,
         _tetraminoController,
         _scoreManager,
+        _gamePlayMenuController,
       };
 
       foreach (var init in _inits)

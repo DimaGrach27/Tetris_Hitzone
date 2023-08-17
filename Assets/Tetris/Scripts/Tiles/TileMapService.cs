@@ -97,8 +97,8 @@ namespace Tetris.Tiles
     {
       int y = minY + 1;
       int minEmpty = minY;
-      
-      while (y <= Constants.HEIGHT_FIELD / 2)
+
+      for (int i = y; i <= Constants.HEIGHT_FIELD / 2; i++)
       {
         if (CheckEmptyLine(y))
         {

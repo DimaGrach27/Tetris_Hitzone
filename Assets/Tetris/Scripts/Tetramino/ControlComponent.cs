@@ -1,4 +1,5 @@
 using System;
+using Tetris.Gameplay;
 using Tetris.Global;
 using Tetris.Interfaces;
 using Tetris.Tiles;
@@ -14,7 +15,9 @@ namespace Tetris.Tetramino
 
     private readonly TileMapService _tileMapService;
     private readonly MoveComponent _moveComponent;
-    
+    private readonly ArrowPanel _arrowPanel;
+    private readonly PauseHandler _pauseHandler;
+
     private TetraminoView _tetraminoView;
     private InputKeys _inputKeys;
     
@@ -22,10 +25,17 @@ namespace Tetris.Tetramino
     
     private float _deltaTimeDur;
 
-    public ControlComponent(TileMapService tileMapService, MoveComponent moveComponent)
+    public ControlComponent(
+      TileMapService tileMapService, 
+      MoveComponent moveComponent, 
+      ArrowPanel arrowPanel,
+      PauseHandler pauseHandler
+      )
     {
       _tileMapService = tileMapService;
       _moveComponent = moveComponent;
+      _arrowPanel = arrowPanel;
+      _pauseHandler = pauseHandler;
     }
     
     public void Init()
@@ -37,6 +47,34 @@ namespace Tetris.Tetramino
       _inputKeys.Move.MoveRight.performed += MoveRightOnPerformed;
       _inputKeys.Move.Boost.started += BoostOnStarted;
       _inputKeys.Move.Boost.canceled += BoostOnCanceled;
+      
+      _arrowPanel.OnClickArrow += OnClickArrowHandler;
+      _arrowPanel.OnStatePress += OnStatePressHandler;
+    }
+
+    private void OnStatePressHandler(Vector2 dir, bool isPressed)
+    {
+      if (dir != Vector2.down)
+      {
+        return;
+      }
+      
+      _isBoostActive = isPressed;
+      _moveComponent.SetIsBlockControl(isPressed);
+    }
+
+    private void OnClickArrowHandler(Vector2 dir)
+    {
+      if (dir == Vector2.right)
+      {
+        MoveRight();
+        return;
+      }
+      
+      if (dir == Vector2.left)
+      {
+        MoveLeft();
+      }
     }
     
     private void BoostOnStarted(InputAction.CallbackContext objCallbackContext)
@@ -53,6 +91,11 @@ namespace Tetris.Tetramino
     
     private void DownFall()
     {
+      if (_pauseHandler.IsPause)
+      {
+        return;
+      }
+      
       if (_tetraminoView == null)
       {
         return;
@@ -83,6 +126,21 @@ namespace Tetris.Tetramino
 
     private void MoveLeftOnPerformed(InputAction.CallbackContext callbackContext)
     {
+      MoveLeft();
+    }
+    
+    private void MoveRightOnPerformed(InputAction.CallbackContext callbackContext)
+    {
+      MoveRight();
+    }
+
+    private void MoveLeft()
+    {
+      if (_pauseHandler.IsPause)
+      {
+        return;
+      }
+      
       if (_tetraminoView == null)
       {
         return;
@@ -96,8 +154,13 @@ namespace Tetris.Tetramino
       _tetraminoView.Move(Vector2.left);
     }
 
-    private void MoveRightOnPerformed(InputAction.CallbackContext callbackContext)
+    private void MoveRight()
     {
+      if (_pauseHandler.IsPause)
+      {
+        return;
+      }
+      
       if (_tetraminoView == null)
       {
         return;
@@ -169,6 +232,9 @@ namespace Tetris.Tetramino
 
     public void Destroy()
     {
+      _arrowPanel.OnClickArrow -= OnClickArrowHandler;
+      _arrowPanel.OnStatePress -= OnStatePressHandler;
+
       _inputKeys.Move.MoveLeft.performed -= MoveLeftOnPerformed;
       _inputKeys.Move.MoveRight.performed -= MoveRightOnPerformed;
       _inputKeys.Move.Boost.started -= BoostOnStarted;

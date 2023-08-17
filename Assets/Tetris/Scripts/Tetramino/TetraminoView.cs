@@ -7,18 +7,20 @@ namespace Tetris.Tetramino
   {
     [SerializeField] private Vector2 _size;
     [SerializeField] private Vector3 _offset;
-    [SerializeField] private TetraminoType _type;
-    [SerializeField] private bool _isOnlyTwoSideRotation;
     [SerializeField] private Vector2 _spawnOffset;
+    
+    [SerializeField] private TetraminoType _type;
+    
     [SerializeField] private Color _color;
+    
+    [SerializeField] private bool _isOnlyTwoSideRotation;
+    
     [SerializeField] private Transform[] _blocksPoint;
 
     private Block[] _blocks;
     public Block[] BLocks => _blocks;
 
     public TetraminoType TetraminoType => _type;
-    public Vector2 Size => _size;
-    public Vector3 Offset => _offset;
     public Vector2 SpawnOffset => _spawnOffset;
     public Color Color => _color;
     public bool IsOnlyTwoSideRotation => _isOnlyTwoSideRotation;
@@ -82,6 +84,7 @@ namespace Tetris.Tetramino
       return bound;
     }
 
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
       Transform trans = GetComponent<Transform>();
@@ -94,6 +97,7 @@ namespace Tetris.Tetramino
       Gizmos.DrawLine(pos, new Vector3(pos.x, GetBound().yMin));
       Gizmos.DrawLine(pos, new Vector3(pos.x, GetBound().yMax));
     }
+#endif
   }
 
   public struct Bound

@@ -1,3 +1,4 @@
+using Tetris.Gameplay;
 using Tetris.Global;
 using Tetris.Interfaces;
 using Tetris.Tiles;
@@ -9,14 +10,19 @@ namespace Tetris.Tetramino
   public class RotationComponent : IComponent, IInit, IDestroy
   {
     private readonly TileMapService _tileMapService;
+    private readonly ArrowPanel _arrowPanel;
+    private readonly PauseHandler _pauseHandler;
+    
     private TetraminoView _tetraminoView;
     private InputKeys _inputKeys;
 
     private int _currentRotation;
     
-    public RotationComponent(TileMapService tileMapService)
+    public RotationComponent(TileMapService tileMapService, ArrowPanel arrowPanel, PauseHandler pauseHandler)
     {
       _tileMapService = tileMapService;
+      _arrowPanel = arrowPanel;
+      _pauseHandler = pauseHandler;
     }
 
     public void SetTetramino(TetraminoView tetraminoView)
@@ -31,10 +37,31 @@ namespace Tetris.Tetramino
       _inputKeys.Enable();
       
       _inputKeys.Move.ChnageForm.performed += ChangeFormOnPerformed;
+      _arrowPanel.OnClickArrow += OnClickArrowHandler;
+    }
+
+    private void OnClickArrowHandler(Vector2 dir)
+    {
+      if (dir != Vector2.up)
+      {
+        return;
+      }
+      
+      ChangeForm();
     }
 
     private void ChangeFormOnPerformed(InputAction.CallbackContext callbackContext)
     {
+      ChangeForm();
+    }
+
+    private void ChangeForm()
+    {
+      if (_pauseHandler.IsPause)
+      {
+        return;
+      }
+      
       if (_tetraminoView == null)
       {
         return;
@@ -110,6 +137,8 @@ namespace Tetris.Tetramino
 
     public void Destroy()
     {
+      _arrowPanel.OnClickArrow -= OnClickArrowHandler;
+
       _inputKeys.Move.ChnageForm.performed -= ChangeFormOnPerformed;
       _inputKeys.Disable();
     }

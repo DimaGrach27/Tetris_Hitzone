@@ -26,6 +26,7 @@ namespace Tetris.Tetramino
       transform.position = pos;
     }
 
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
       Transform trans = GetComponent<Transform>();
@@ -39,5 +40,6 @@ namespace Tetris.Tetramino
       Gizmos.DrawLine(pos, pos + Vector3.up);
       Gizmos.DrawLine(pos, pos -Vector3.up);
     }
+#endif
   }
 }
